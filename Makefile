@@ -2,9 +2,12 @@
 
 export GO15VENDOREXPERIMENT=1
 
+# Do not build any of the containers/storage libraries, or devicemapper
+# https://github.com/projectatomic/skopeo/issues/385#issuecomment-318153586
+STORAGE_BUILD_TAG=containers_image_ostree_stub exclude_graphdriver_devicemapper
+
 ifeq ($(shell uname),Darwin)
 PREFIX ?= ${DESTDIR}/usr/local
-DARWIN_BUILD_TAG=containers_image_ostree_stub
 # On macOS, (brew install gpgme) installs it within /usr/local, but /usr/local/include is not in the default search path.
 # Rather than hard-code this directory, use gpgme-config. Sadly that must be done at the top-level user
 # instead of locally in the gpgme subpackage, because cgo supports only pkg-config, not general shell scripts,
@@ -52,7 +55,7 @@ MANPAGES_MD = $(wildcard docs/*.md)
 
 BTRFS_BUILD_TAG = $(shell hack/btrfs_tag.sh)
 LIBDM_BUILD_TAG = $(shell hack/libdm_tag.sh)
-LOCAL_BUILD_TAGS = $(BTRFS_BUILD_TAG) $(LIBDM_BUILD_TAG) $(DARWIN_BUILD_TAG)
+LOCAL_BUILD_TAGS = $(BTRFS_BUILD_TAG) $(LIBDM_BUILD_TAG) $(STORAGE_BUILD_TAG)
 BUILDTAGS += $(LOCAL_BUILD_TAGS)
 
 #   make all DEBUG=1
