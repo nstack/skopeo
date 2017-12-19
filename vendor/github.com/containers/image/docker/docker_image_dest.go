@@ -20,7 +20,7 @@ import (
 	"github.com/docker/distribution/registry/api/v2"
 	"github.com/docker/distribution/registry/client"
 	"github.com/opencontainers/go-digest"
-	imgspecv1 "github.com/opencontainers/image-spec/specs-go/v1"
+	//	imgspecv1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -57,7 +57,10 @@ func (d *dockerImageDestination) Close() error {
 
 func (d *dockerImageDestination) SupportedManifestMIMETypes() []string {
 	return []string{
-		imgspecv1.MediaTypeImageManifest,
+		// TODO(jonboulle): this breaks quay.io because it returns a 500 internal server error when it receives an OCI manifest.
+		// It should rather return a 400, which would trigger this library to retry with the next preferred manifest.
+		// Until this is fixed upstream in Quay, let's just skip trying to upload OCI manifests, because we don't need them
+		// imgspecv1.MediaTypeImageManifest,
 		manifest.DockerV2Schema2MediaType,
 		manifest.DockerV2Schema1SignedMediaType,
 		manifest.DockerV2Schema1MediaType,
